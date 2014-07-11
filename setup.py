@@ -35,7 +35,7 @@ def run_setup():
         keywords='Continuum,toolkit',
         packages=find_packages('lib'),
         package_dir={'': 'lib'},
-        data_files=[('conf', ['conf/ctk.conf'])],
+        data_files=[('conf', ['conf/*'])],
         zip_safe=False, # http://stackoverflow.com/a/2798497
 #        entry_points={
 #            'console_scripts': [
