@@ -1,0 +1,88 @@
+import re
+import os
+import sys
+
+vi = sys.version_info
+(major, minor) = (vi[0], vi[1])
+if major != 2 or minor not in (6, 7):
+    raise Exception("Enversion requires either Python 2.6 or 2.7.")
+
+
+try:
+    import ez_setup
+    ez_setup.use_setuptools()
+    from setuptools import setup
+    has_setuptools = True
+except ImportError:
+    try:
+        from setuptools import setup
+        has_setuptools = True
+    except:
+        pass
+    has_setuptools = False
+    from distutils.core import setup
+
+basedir = os.path.abspath(os.path.dirname(__file__))
+
+def join_path(*args):
+    return os.path.abspath(os.path.normpath(os.path.join(*args)))
+
+def read(*parts):
+    with open(join_path(basedir, *parts), 'r') as f:
+        return f.read()
+
+def find_packages(base):
+    packages = []
+    for pkg in ['ctk']:
+        path = os.path.join(base, pkg)
+        for (dirname, subdirs, files) in os.walk(path):
+            if '__init__.py' in files:
+                (lib, fragment) = dirname.split(os.sep, 1)
+                packages.append(fragment.replace(os.sep, '.'))
+    return packages
+
+def version():
+    return (
+        re.compile(r"^__version__ = '(.*?)'$", re.S)
+          .match(read('lib', 'evn', '__init__.py'))
+          .group(1)
+    )
+
+def run_setup():
+    setup(
+        name='ctk',
+        version=version(),
+        license='Apache',
+        description='Continuum Consultant Toolkit',
+        author='Trent Nelson and FDE',
+        author_email='trent.p.nelso@continuum.io',
+        url='http://www.continuum.io/',
+        keywords='python,packages,tools,commands,cli',
+        packages=find_packages('lib'),
+        package_dir={'': 'lib'},
+        entry_points={
+            'console_scripts': [
+                'ctk = ctk:main',
+            ],
+        },
+        classifiers=[
+            'Environment :: Console',
+            'License :: OSI Approved :: Apache Software License',
+            'Development Status :: 3 - Alpha',
+            'Operating System :: POSIX',
+            'Operating System :: MacOS :: MacOS X',
+            'Operating System :: Microsoft :: Windows',
+            'Intended Audience :: Developers',
+            'Intended Audience :: System Administrators',
+            'Intended Audience :: Configuration Managers',
+            'Intended Audience :: Information Technology',
+            'Programming Language :: Python',
+            'Programming Language :: Unix Shell',
+            'Topic :: Software Development :: Quality Assurance',
+        ],
+    )
+
+if __name__ == '__main__':
+    run_setup()
+
+# vim:set ts=8 sw=4 sts=4 tw=78 et:
