@@ -18,7 +18,7 @@ except ImportError:
 
 def find_packages(base):
     packages = []
-    for pkg in ['evn']:
+    for pkg in ['ctk']:
         path = os.path.join(base, pkg)
         for (dirname, subdirs, files) in os.walk(path):
             if '__init__.py' in files:
@@ -28,12 +28,11 @@ def find_packages(base):
 
 def run_setup():
     setup(
-        name='enversion',
-        description='Enterprise Subversion Framework',
-        author='Trent Nelson',
-        author_email='trent@snakebite.org',
-        url='http://www.enversion.org/',
-        keywords='subversion,svn,scm,pysvn',
+        name='ctk',
+        version=0.1,
+        description='Continuum Consultant Toolkit',
+        author='Continuum Analytics, Inc',
+        keywords='Continuum,toolkit',
         packages=find_packages('lib'),
         package_dir={'': 'lib'},
 #        entry_points={
