@@ -65,10 +65,11 @@ CONF_DIR = join_path(LIB_DIR, '../conf')
 LOGS_DIR = join_path(LIB_DIR, '../logs')
 DATA_DIR = join_path(LIB_DIR, '../data')
 
-assert LIB_DIR.endswith('lib'), LIB_DIR
-
-for d in (LIB_DIR, BIN_DIR, CONF_DIR, LOGS_DIR):
-    assert isdir(d), d
+#fixme: revisit these assertions
+#assert LIB_DIR.endswith('lib'), LIB_DIR
+#
+#for d in (LIB_DIR, BIN_DIR, CONF_DIR, LOGS_DIR):
+#    assert isdir(d), d
 
 # HOSTFQDN may have the FQDN or it may not; HOSTNAME will always be the
 # shortest representation of the hostname.
