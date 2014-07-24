@@ -29,7 +29,7 @@ def find_packages(base):
 def run_setup():
     setup(
         name='ctk',
-        version=0.1,
+        version='0.1',
         description='Continuum Consultant Toolkit',
         author='Continuum Analytics, Inc',
         keywords='Continuum,toolkit',
