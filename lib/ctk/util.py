@@ -256,10 +256,7 @@ def stream_results(query):
     return progressbar(stream(query, size), total=size, leave=True)
 
 def ensure_unique(d):
-    seen = set()
-    for k in d:
-        assert k not in seen
-        seen.add(k)
+    assert len(set(d)) == len(d)
 
 def endswith(string, suffixes):
     """

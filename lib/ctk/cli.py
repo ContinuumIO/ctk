@@ -474,6 +474,7 @@ class CLI(object):
 #=============================================================================
 def extract_command_args_and_kwds(*args_):
     args = [ a for a in args_ ]
+    import pdb; pdb.set_trace()
     kwds = {
         'program_name': args.pop(0),
         'module_names': [ m for m in args.pop(0).split(',') ] if args else None
