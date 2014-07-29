@@ -309,9 +309,7 @@ class CLI(object):
         pyc_to_py = lambda path: path[:-1] if path[-1] == 'c' else path
         for (namespace, module) in self.modules.commands.items():
             path = pyc_to_py(module.__file__)
-            matches = read_classe(path)
-
-
+            matches = read_classes(path)
             for name in matches:
                 attr = getattr(module, name)
                 if attr == Command or not issubclass(attr, Command):
