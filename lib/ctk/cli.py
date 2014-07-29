@@ -300,17 +300,17 @@ class CLI(object):
 
     def _find_command_subclasses(self):
         pyc_to_py = lambda path: path[:-1] if path[-1] == 'c' else path
-        class_pattern = re.compile('^class ([^_][^\s]+)\(.*', re.M)
-        def read_classes(path):
+        class_name_pattern = re.compile('^class ([^_][^\s]+)\(.*', re.M)
+        def read_class_names(path):
             with open(path, 'r') as f:
-                classes = class_pattern.findall(f.read())
-            return classes
+                class_names = class_name_pattern.findall(f.read())
+            return class_names
         seen = dict()
         subclasses = list()
         for (namespace, module) in self.modules.commands.items():
             path = pyc_to_py(module.__file__)
-            classes = read_classes(path)
-            for class_name in classes:
+            class_names = read_class_names(path)
+            for class_name in class_names:
                 attr = getattr(module, class_name)
                 if attr == Command or not issubclass(attr, Command):
                     continue
