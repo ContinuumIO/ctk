@@ -305,22 +305,25 @@ class CLI(object):
             with open(path, 'r') as f:
                 class_names = class_name_pattern.findall(f.read())
             return class_names
+        def yielder(item_yielder):
+            for (namespace, module) in item_yielder():
+                path = pyc_to_py(module.__file__)
+                class_names = read_class_names(path)
+                for class_name in class_names:
+                    attr = getattr(module, class_name)
+                    yield attr, class_name, namespace, module
         seen = dict()
         subclasses = list()
-        for (namespace, module) in self.modules.commands.items():
-            path = pyc_to_py(module.__file__)
-            class_names = read_class_names(path)
-            for class_name in class_names:
-                attr = getattr(module, class_name)
-                if attr == Command or not issubclass(attr, Command):
-                    continue
+        for (attr, class_name, namespace, module) \
+                in yielder(self.modules.commands.items):
+            if attr == Command or not issubclass(attr, Command):
+                continue
+            if class_name in seen:
+                args = (class_name, seen[class_name], namespace)
+                raise ClashingCommandNames(*args)
 
-                if class_name in seen:
-                    args = (class_name, seen[class_name], namespace)
-                    raise ClashingCommandNames(*args)
-
-                seen[class_name] = namespace
-                subclasses.append((namespace, class_name, attr))
+            seen[class_name] = namespace
+            subclasses.append((namespace, class_name, attr))
 
         return subclasses
 
