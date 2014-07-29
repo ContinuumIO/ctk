@@ -299,14 +299,14 @@ class CLI(object):
                 store[namespace] = importlib.import_module(name)
 
     def _find_command_subclasses(self):
-        seen = dict()
+        pyc_to_py = lambda path: path[:-1] if path[-1] == 'c' else path
         class_pattern = re.compile('^class ([^_][^\s]+)\(.*', re.M)
         def read_classes(path):
             with open(path, 'r') as f:
                 classes = class_pattern.findall(f.read())
             return classes
+        seen = dict()
         subclasses = list()
-        pyc_to_py = lambda path: path[:-1] if path[-1] == 'c' else path
         for (namespace, module) in self.modules.commands.items():
             path = pyc_to_py(module.__file__)
             classes = read_classes(path)
