@@ -302,10 +302,9 @@ class CLI(object):
         seen = dict()
         pattern = re.compile('^class ([^\s]+)\(.*', re.M)
         subclasses = list()
+        pyc_to_py = lambda path: path[:-1] if path[-1] == 'c' else path
         for (namespace, module) in self.modules.commands.items():
-            path = module.__file__
-            if path[-1] == 'c':
-                path = path[:-1]
+            path = pyc_to_py(module.__file__)
 
             with open(path, 'r') as f:
                 matches = pattern.findall(f.read())
