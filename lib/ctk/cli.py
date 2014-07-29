@@ -309,18 +309,18 @@ class CLI(object):
         pyc_to_py = lambda path: path[:-1] if path[-1] == 'c' else path
         for (namespace, module) in self.modules.commands.items():
             path = pyc_to_py(module.__file__)
-            matches = read_classes(path)
-            for name in matches:
-                attr = getattr(module, name)
+            classes = read_classes(path)
+            for class_name in classes:
+                attr = getattr(module, class_name)
                 if attr == Command or not issubclass(attr, Command):
                     continue
 
-                if name in seen:
-                    args = (name, seen[name], namespace)
+                if class_name in seen:
+                    args = (class_name, seen[class_name], namespace)
                     raise ClashingCommandNames(*args)
 
-                seen[name] = namespace
-                subclasses.append((namespace, name, attr))
+                seen[class_name] = namespace
+                subclasses.append((namespace, class_name, attr))
 
         return subclasses
 
