@@ -303,7 +303,7 @@ class CLI(object):
         class_pattern = re.compile('^class ([^\s]+)\(.*', re.M)
         def read_classes(path):
             with open(path, 'r') as f:
-                classes = pattern.findall(f.read())
+                classes = class_pattern.findall(f.read())
             return classes
         subclasses = list()
         pyc_to_py = lambda path: path[:-1] if path[-1] == 'c' else path
