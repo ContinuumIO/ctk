@@ -300,7 +300,7 @@ class CLI(object):
 
     def _find_command_subclasses(self):
         seen = dict()
-        class_pattern = re.compile('^class ([^\s]+)\(.*', re.M)
+        class_pattern = re.compile('^class ([^_][^\s]+)\(.*', re.M)
         def read_classes(path):
             with open(path, 'r') as f:
                 classes = class_pattern.findall(f.read())
@@ -312,7 +312,7 @@ class CLI(object):
             matches = read_classe(path)
 
 
-            for name in [ n for n in matches if n[0] != '_' ]:
+            for name in matches:
                 attr = getattr(module, name)
                 if attr == Command or not issubclass(attr, Command):
                     continue
