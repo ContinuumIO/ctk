@@ -314,8 +314,8 @@ class CLI(object):
                     yield (attr, class_name, namespace, module)
         seen = dict()
         subclasses = list()
-        for (attr, class_name, namespace, module) \
-                in yielder(self.modules.commands.items):
+        for item in yielder(self.modules.commands.items):
+            (attr, class_name, namespace, module) = item
             if attr == Command or not issubclass(attr, Command):
                 continue
             if class_name in seen:
