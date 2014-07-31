@@ -311,7 +311,7 @@ class CLI(object):
                 class_names = read_class_names(path)
                 for class_name in class_names:
                     attr = getattr(module, class_name)
-                    yield attr, class_name, namespace, module
+                    yield (attr, class_name, namespace, module)
         seen = dict()
         subclasses = list()
         for (attr, class_name, namespace, module) \
