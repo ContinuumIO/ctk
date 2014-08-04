@@ -1129,7 +1129,7 @@ class ImplicitContextSensitiveObject(object):
 
     def __exit__(self, *exc_info):
         self.context_depth -= 1
-        self._exit(*exc_in)
+        self._exit(*exc_info)
 
     def _enter(self):
         raise NotImplementedError
