@@ -418,6 +418,7 @@ def prepend_error_if_missing(s):
     )
 
 def render_text_table(rows, **kwds):
+    # FIXME: consider prettytable: https://code.google.com/p/prettytable/
     banner = kwds.get('banner')
     footer = kwds.get('footer')
     output = kwds.get('output', sys.stdout)
@@ -473,6 +474,7 @@ def render_text_table(rows, **kwds):
     output.write(add_linesep_if_missing('\n'.join(out)))
 
 def render_unicode_table(rows, **kwds):
+    # FIXME: consider prettytable: https://code.google.com/p/prettytable/
     """
     Unicode version of above.  Such code repetition!
     """
