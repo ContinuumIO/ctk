@@ -30,6 +30,12 @@ SUFFIXES = (
     'Arg',
 )
 
+# Quick hack for 3.x support.
+try:
+    STRING_TYPES = (str, unicode)
+except NameError:
+    STRING_TYPES = (str,)
+
 #===============================================================================
 # Base Invariant Class
 #===============================================================================
@@ -81,7 +87,7 @@ class Invariant(BaseException):
             self._test = self._test_simple_equality
 
         if not self._opt_type and self._type:
-            if self._type in (str, unicode):
+            if self._type in STRING_TYPES:
                 self._opt_type = 'string'
             elif self._type  == int:
                 self._opt_type = 'int'
@@ -289,9 +295,12 @@ class StringInvariant(Invariant):
             l <= self._maxlen
         )
 
-class UnicodeInvariant(StringInvariant):
-    _type = unicode
-    _type_desc = 'unicode string'
+try:
+    class UnicodeInvariant(StringInvariant):
+        _type = unicode
+        _type_desc = 'unicode string'
+except NameError:
+    UnicodeInvariant = StringInvariant
 
 class PositiveIntegerInvariant(Invariant):
     _type = int
@@ -306,7 +315,7 @@ class PositiveIntegerInvariant(Invariant):
                 assert i >= self._min
             if self._max:
                 assert i <= self._max
-            return True
+            return self._try_save(i)
         except:
             return False
 
@@ -324,7 +333,7 @@ class AscendingCSVSepPositiveIntegersInvariant(Invariant):
             numbers = [ int(i) for i in self.actual.split(',') ]
             sorted_numbers = sorted(numbers)
             assert numbers == sorted_numbers
-        except ValueError, AssertionError:
+        except (ValueError, AssertionError):
             return False
         assert numbers
         try:
@@ -399,7 +408,7 @@ class SetInvariant(Invariant):
         try:
             self.dst_value = set((self.actual,))
             assert ((self._set & self.dst_value) == self.dst_value)
-        except ValueError, AssertionError:
+        except (ValueError, AssertionError):
             return False
         return True
 
@@ -417,7 +426,7 @@ class MultipleSetInvariant(Invariant):
         try:
             self.dst_value = set(self.actual.split(','))
             assert ((self._set & self.dst_value) == self.dst_value)
-        except ValueError, AssertionError:
+        except (ValueError, AssertionError):
             return False
         return True
 
@@ -605,6 +614,18 @@ class EndDateInvariant(DateInvariant):
                 return False
 
         return True
+
+#===============================================================================
+# Networking Invariants
+#===============================================================================
+class PortInvariant(PositiveIntegerInvariant):
+    _min = 1
+    _max = 65535
+    expected = "a TCP/IP port (integer between 1 and 65535)"
+
+class NonEphemeralPortInvariant(PortInvariant):
+    _min = 1025
+    expected = "an non-ephemeral port (i.e. between 1024 and 65535)"
 
 #===============================================================================
 # Invariant Aware Object

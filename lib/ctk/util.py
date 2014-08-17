@@ -12,7 +12,11 @@ import datetime
 import itertools
 import collections
 
-import cStringIO as StringIO
+try:
+    import cStringIO as StringIO
+except ImportError:
+    import io
+    StringIO = io.StringIO
 
 from datetime import (
     timedelta,
@@ -49,10 +53,6 @@ from functools import (
 from subprocess import (
     Popen,
     PIPE,
-)
-
-from urllib2 import (
-    urlopen,
 )
 
 from csv import reader as csv_reader
@@ -173,7 +173,13 @@ def ensure_sorted(d):
     sorted_keys = [ k for k in sorted(keys) ]
     assert keys == sorted_keys, (keys, sorted_keys)
 
-def yield_scalars(obj, scalar_types=frozenset((int, float, str, unicode))):
+def yield_scalars(obj, scalar_types=None):
+    if not scalar_types:
+        try:
+            scalar_types = frozenset((int, float, str, unicode))
+        except NameError:
+            scalar_types = frozenset((int, float, str))
+
     for k in dir(obj.__class__):
         v = getattr(obj, k)
         t = type(v)
@@ -1536,6 +1542,7 @@ def create_namedtuple_from_csv(name, csv):
     return create_namedtuple(name, data, mutable=mutable)
 
 def download_url(url):
+    from urllib2 import urlopen
     return urlopen(url).read()
 
 def create_namedtuple_from_csv_url(name, url):

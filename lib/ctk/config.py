@@ -25,11 +25,18 @@ from os.path import (
 
 from textwrap import dedent
 
-from ConfigParser import (
-    NoOptionError,
-    NoSectionError,
-    RawConfigParser,
-)
+try:
+    from ConfigParser import (
+        NoOptionError,
+        NoSectionError,
+        RawConfigParser,
+    )
+except ImportError:
+    from configparser import (
+        NoOptionError,
+        NoSectionError,
+        RawConfigParser,
+    )
 
 from ctk.path import (
     join_path,
@@ -74,7 +81,11 @@ DATA_DIR = join_path(LIB_DIR, '../data')
 # HOSTFQDN may have the FQDN or it may not; HOSTNAME will always be the
 # shortest representation of the hostname.
 HOSTFQDN = subprocess.check_output('hostname')[:-len(os.linesep)].lower()
-HOSTNAME = HOSTFQDN.split('.')[0]
+try:
+    HOSTNAME = HOSTFQDN.split('.')[0]
+except TypeError:
+    HOSTFQDN = HOSTFQDN.decode('utf-8')
+    HOSTNAME = HOSTFQDN.split('.')[0]
 
 #===============================================================================
 # Exceptions
@@ -248,8 +259,11 @@ class Config(RawConfigParser):
 
         files.append((cls.conf_dir, cls.namespace))
 
-        if cls.parent:
-            cls.parent.discover_config_files(files)
+        try:
+            if cls.parent:
+                cls.parent.discover_config_files(files)
+        except AttributeError:
+            pass
 
     @property
     @memoize

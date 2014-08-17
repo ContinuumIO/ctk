@@ -1,6 +1,8 @@
 #===============================================================================
 # Imports
 #===============================================================================
+from __future__ import print_function
+
 import os
 import re
 import sys
@@ -541,10 +543,9 @@ if __name__ == '__main__':
     nprocs = cpu_count()
     if parallelism_hint:
         if parallelism_hint > nprocs:
-            print "warning: parallelism hint exceeds ncpus (%d vs %d)" % (
-                parallelism_hint,
-                nprocs,
-            )
+            fmt = "warning: parallelism hint exceeds ncpus (%d vs %d)\n"
+            msg = fmt % (parallelism_hint, nprocs)
+            sys.stderr.write(msg)
         nprocs = parallelism_hint
 
     procs = []
@@ -553,7 +554,7 @@ if __name__ == '__main__':
         procs.append(p)
         p.start()
 
-    print "started %d processes" % len(procs)
+    sys.stdout.write("started %d processes\n" % len(procs))
 
     args_queue.join()
 
