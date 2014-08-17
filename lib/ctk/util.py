@@ -1,6 +1,6 @@
-#=============================================================================
+#===============================================================================
 # Imports
-#=============================================================================
+#===============================================================================
 import os
 import re
 import sys
@@ -12,7 +12,11 @@ import datetime
 import itertools
 import collections
 
-import cStringIO as StringIO
+try:
+    import cStringIO as StringIO
+except ImportError:
+    import io
+    StringIO = io.StringIO
 
 from datetime import (
     timedelta,
@@ -51,10 +55,6 @@ from subprocess import (
     PIPE,
 )
 
-from urllib2 import (
-    urlopen,
-)
-
 from csv import reader as csv_reader
 
 from ctk import (
@@ -62,9 +62,9 @@ from ctk import (
 )
 
 
-#=============================================================================
+#===============================================================================
 # Globals
-#=============================================================================
+#===============================================================================
 SHORT_MONTHS = (
     'Jan',
     'Feb',
@@ -89,9 +89,9 @@ is_darwin = (sys.platform == 'darwin')
 is_win32 = (sys.platform == 'win32')
 
 assert sum((is_linux, is_darwin, is_win32)) == 1
-#=============================================================================
+#===============================================================================
 # Helper Methods
-#=============================================================================
+#===============================================================================
 def bytes_to_mb(b):
     return '%0.3fMB' % (float(b)/1024.0/1024.0)
 
@@ -173,7 +173,13 @@ def ensure_sorted(d):
     sorted_keys = [ k for k in sorted(keys) ]
     assert keys == sorted_keys, (keys, sorted_keys)
 
-def yield_scalars(obj, scalar_types=frozenset((int, float, str, unicode))):
+def yield_scalars(obj, scalar_types=None):
+    if not scalar_types:
+        try:
+            scalar_types = frozenset((int, float, str, unicode))
+        except NameError:
+            scalar_types = frozenset((int, float, str))
+
     for k in dir(obj.__class__):
         v = getattr(obj, k)
         t = type(v)
@@ -943,9 +949,9 @@ def list_zfill(l, width):
 
     return [ '' for _ in range(0, width-list_len) ] + l
 
-#=============================================================================
+#===============================================================================
 # Helper Classes
-#=============================================================================
+#===============================================================================
 class forgiving_list(list):
     """
     Helper class that returns None upon __getitem__ index errors.
@@ -1126,7 +1132,7 @@ class ImplicitContextSensitiveObject(object):
 
     def __exit__(self, *exc_info):
         self.context_depth -= 1
-        self._exit(*exc_in)
+        self._exit(*exc_info)
 
     def _enter(self):
         raise NotImplementedError
@@ -1194,9 +1200,9 @@ class Options(dict):
         else:
             return self.__getitem__(name)
 
-#=============================================================================
+#===============================================================================
 # Helper Classes
-#=============================================================================
+#===============================================================================
 class Constant(dict):
     def __init__(self):
         items = self.__class__.__dict__.items()
@@ -1405,9 +1411,9 @@ class ProcessWrapper(object):
     def clone(self):
         return self.__class__(self.exe)
 
-#=============================================================================
+#===============================================================================
 # CSV Tools/Utils
-#=============================================================================
+#===============================================================================
 def create_namedtuple(name, data, mutable=False):
     header = list()
     wrappers = list()
@@ -1533,6 +1539,7 @@ def create_namedtuple_from_csv(name, csv):
     return create_namedtuple(name, data, mutable=mutable)
 
 def download_url(url):
+    from urllib2 import urlopen
     return urlopen(url).read()
 
 def create_namedtuple_from_csv_url(name, url):
