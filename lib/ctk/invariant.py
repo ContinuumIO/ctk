@@ -692,7 +692,7 @@ class InvariantAwareObject(object):
         text = ''.join(block)
         inner = self.__inner_classes_pattern
 
-        ordered_names = [names[n[0]] for n in innter.findall(text)]
+        ordered_names = [names[n[0]] for n in inner.findall(text)]
         order = list(enumerate(ordered_names))
         instances = {
                 name: classes[name](self, name)
