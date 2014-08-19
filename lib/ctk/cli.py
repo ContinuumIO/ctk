@@ -10,6 +10,10 @@ import optparse
 import textwrap
 import importlib
 
+from operator import (
+    methodcaller,
+)
+
 from collections import (
     OrderedDict,
 )
@@ -477,11 +481,13 @@ class CLI(object):
 #===============================================================================
 # Main
 #===============================================================================
-def extract_command_args_and_kwds(*args_):
-    args = [ a for a in args_ ]
+def extract_command_args_and_kwds(*args):
+    split_on_comma = methodcaller('split', ',')
+    program_name, _rest = args[0], args[1:]
+    module_names = map(split_on_comma, _rest) if _rest else None
     kwds = {
-        'program_name': args.pop(0),
-        'module_names': [ m for m in args.pop(0).split(',') ] if args else None
+        'program_name': program_name,
+        'module_names': module_names,
     }
     return (args, kwds)
 
