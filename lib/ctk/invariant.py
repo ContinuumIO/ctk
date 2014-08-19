@@ -664,11 +664,11 @@ class InvariantAwareObject(object):
         c = self.__convert
         p = self.__pattern
 
-        classes = dict(
-            (c(t), getattr(self, n)) for (n, t) in [
-                (n, p.findall(n)) for n in filter(f, dir(self))
-            ]
-        )
+        filtered_attr_names = filter(f, dir(self))
+        filtered_attr_patterns = map(p.findall, filtered_attr_names)
+        converted_attr_patterns = map(c, filtered_attr_patterns)
+        filtered_attrs = map(self.__getattr__, filtered_attr_names)
+        classes = dict(zip(converted_attr_patterns, filtered_attrs))
 
         names = dict((v.__name__, k) for (k, v) in classes.items())
 
