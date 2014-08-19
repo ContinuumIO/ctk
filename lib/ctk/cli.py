@@ -514,6 +514,7 @@ if __name__ == '__main__':
     args = sys.argv[1:]
     is_mp = len(args) > 2 and '@' in args[2]
 
+    parallelism_hint = None
     if is_mp:
         def process_command(command):
             parallelism_hint, command = command.split('@')
