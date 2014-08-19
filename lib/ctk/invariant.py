@@ -678,16 +678,16 @@ class InvariantAwareObject(object):
             lines = linecache.getlines(filename)
             classname = cls.__name__
             prefix = 'class %s(' % classname
-            found = False
+            found, found_i = False, None
             for i, line in enumerate(lines):
                 if prefix in line:
-                    found = i
+                    found, found_i = True, i
                     break
 
             if not found:
                 raise IOError('could not find source code for class')
 
-            block = inspect.getblock(lines[found:])
+            block = inspect.getblock(lines[found_i:])
             return block
         block = get_cls_block(cls)
         text = ''.join(block)
