@@ -511,23 +511,21 @@ if __name__ == '__main__':
     # will be expected to be populated with a list of argument lists that
     # will be pushed onto a multiprocessing joinable queue.
 
-    is_mp = False
     args = sys.argv[1:]
-    if len(args) <= 2:
-        cli = run(*args)
-        sys.exit(cli.returncode)
+    is_mp = len(args) > 2 and '@' in args[2]
 
-    command = args[2]
-    if '@' in command:
-        is_mp = True
-        ix = command.find('@')
-        parallelism_hint = int(command[:ix] or 0)
-        args[2] = command[ix+1:]
+    if is_mp:
+        def process_command(command):
+            parallelism_hint, command = command.split('@')
+            parallelism_hint = int(parallelism_hint or 0)
+            return parallelism_hint, command
+        parallelism_hint, args[2] = process_command(args[2])
 
     cli = run(*args)
     if not is_mp or cli.returncode:
         sys.exit(cli.returncode)
 
+    # only here if using multiprocesing
     command = cli.commandline.command
     results = command.results
     if not results:
