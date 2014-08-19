@@ -669,11 +669,9 @@ class InvariantAwareObject(object):
         converted_attr_patterns = map(c, filtered_attr_patterns)
         filtered_attrs = map(self.__getattr__, filtered_attr_names)
         classes = dict(zip(converted_attr_patterns, filtered_attrs))
-
         names = dict((v.__name__, k) for (k, v) in classes.items())
 
-        cls = self.__class__
-        def get_cls_block(cls):
+        def get_cls_block_text(cls):
             filename = inspect.getsourcefile(cls)
             lines = linecache.getlines(filename)
             classname = cls.__name__
@@ -688,9 +686,11 @@ class InvariantAwareObject(object):
                 raise IOError('could not find source code for class')
 
             block = inspect.getblock(lines[found_i:])
-            return block
-        block = get_cls_block(cls)
-        text = ''.join(block)
+            text = ''.join(block)
+            return text
+
+        cls = self.__class__
+        text = get_cls_block_text(cls)
         inner = self.__inner_classes_pattern
 
         ordered_names = [names[n[0]] for n in inner.findall(text)]
