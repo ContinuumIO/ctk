@@ -673,22 +673,23 @@ class InvariantAwareObject(object):
         names = dict((v.__name__, k) for (k, v) in classes.items())
 
         cls = self.__class__
-        classname = cls.__name__
-        filename = inspect.getsourcefile(cls)
-        lines = linecache.getlines(filename)
-        lines_len = len(lines)
-        prefix = 'class %s(' % classname
-        found = False
-        for i in range(lines_len):
-            line = lines[i]
-            if prefix in line:
-                found = i
-                break
+        def get_cls_block(cls):
+            filename = inspect.getsourcefile(cls)
+            lines = linecache.getlines(filename)
+            classname = cls.__name__
+            prefix = 'class %s(' % classname
+            found = False
+            for i, line in enumerate(lines):
+                if prefix in line:
+                    found = i
+                    break
 
-        if not found:
-            raise IOError('could not find source code for class')
+            if not found:
+                raise IOError('could not find source code for class')
 
-        block = inspect.getblock(lines[found:])
+            block = inspect.getblock(lines[found:])
+            return block
+        block = get_cls_block(cls)
         text = ''.join(block)
         inner = self.__inner_classes_pattern
 
