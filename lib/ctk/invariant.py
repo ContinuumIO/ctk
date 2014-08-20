@@ -90,12 +90,8 @@ class Invariant(BaseException):
         if not self._opt_type and self._type:
             if self._type in STRING_TYPES:
                 self._opt_type = 'string'
-            elif self._type  == int:
-                self._opt_type = 'int'
-            elif self._type == float:
-                self._opt_type = 'float'
-            elif self._type == complex:
-                self._opt_type = 'complex'
+            elif self._type in (int, float, complex):
+                self._opt_type = self._type.__name__
 
         if not self._type_desc and self._opt_type:
             self._type_desc = self._opt_type
