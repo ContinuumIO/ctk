@@ -94,10 +94,7 @@ class Invariant(BaseException):
                 self._opt_type = self._type.__name__
 
         if not self._type_desc:
-            if self._opt_type:
-                self._type_desc = self._opt_type
-            else:
-                self._type_desc = self._type.__name__
+            self._type_desc = self._opt_type or self._type.__name__
 
         if not self._metavar:
             self._metavar = name.upper()
