@@ -81,6 +81,7 @@ class Invariant(BaseException):
             self._pattern = re.compile(self._regex)
             if not hasattr(self, 'expected'):
                 self.expected = "%s to match regex '%s'" % (n, self._regex)
+            # implies can't set test if you set _regex?
             self._test = self._test_regex
 
         if not hasattr(self, '_test'):
