@@ -180,17 +180,8 @@ class Invariant(BaseException):
         name = self._name
         actual = self.actual
 
-        check_existing = (
-            not hasattr(self, '_check_existing_') or (
-                hasattr(self, '_check_existing_') and
-                self._check_existing_
-            )
-        )
-
-        has_existing = (
-            hasattr(obj, '_existing') and
-            obj._existing
-        )
+        check_existing = getattr(self, '_check_existing_', True)
+        has_existing = getattr(obj, '_existing', False)
 
         if not has_existing:
             return
