@@ -93,11 +93,11 @@ class Invariant(BaseException):
             elif self._type in (int, float, complex):
                 self._opt_type = self._type.__name__
 
-        if not self._type_desc and self._opt_type:
-            self._type_desc = self._opt_type
-
         if not self._type_desc:
-            self._type_desc = self._type.__name__
+            if self._opt_type:
+                self._type_desc = self._opt_type
+            else:
+                self._type_desc = self._type.__name__
 
         if not self._metavar:
             self._metavar = name.upper()
