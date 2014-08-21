@@ -106,28 +106,25 @@ class Invariant(BaseException):
         if not self._metavar:
             self._metavar = name.upper()
 
-        s = None
-        l = None
-        long_opts = obj._long_opts
-        short_opts = obj._short_opts
-
-        if self._arg:
-            a = self._arg
+        def opt_strs_from_arg(a):
             assert len(a) >= 2, a
+            (s, l) = (None, None)
             if '/' in a:
+                # both short and long have been specified
                 (s, l) = a.split('/')
                 s = re.sub('^-', '', s)
                 l = re.sub('^--', '', l)
-                assert s, s
-                assert all([l, len(l) >= 2]), l
-
+            elif a[0] == '-' and a[1] != '-':
+                # ONLY short has been specified
+                s = a[1:]
             else:
-                if a[0] == '-' and a[1] != '-':
-                    s = a[1:]
-                else:
-                    assert a.startswith('--') and len(a) >= 4, a
-                    l = a[2:]
-        else:
+                assert a.startswith('--'), a
+                # ONLY long has been specified
+                l = a[2:]
+            return s, l
+
+        def opt_strs_from_name(name, short_opts):
+            (s, l) = (None, None)
             l = name.replace('_', '-')
 
             chars = [ (c, c.upper()) for c in list(name) ]
@@ -135,13 +132,29 @@ class Invariant(BaseException):
                 if c not in short_opts:
                     s = c
                     break
+            return s, l
 
-        if l:
-            assert l not in long_opts, (l, long_opts)
-            long_opts[l] = self
-        if s:
-            assert s not in short_opts, (s, short_opts)
-            short_opts[s] = self
+        def assert_s_l_correctness(s, l):
+            assert s or l, (s, l)
+            assert s is None or len(s) == 1, s
+            assert l is None or len(l) >= 2, l
+
+        def insert_opt(opt, opts, self):
+            if opt:
+                assert opt not in opts, (opt, opts)
+                opts[opt] = self
+
+        long_opts = obj._long_opts
+        short_opts = obj._short_opts
+        s, l = None, None
+        if self._arg:
+            s, l = opt_strs_from_arg(self._arg)
+        else:
+            s, l = opt_strs_from_name(name, short_opts)
+
+        assert_s_l_correctness(s, l)
+        insert_opt(l, long_opts, self)
+        insert_opt(s, short_opts, self)
 
         self._opt_long = l
         self._opt_short = s
