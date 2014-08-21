@@ -74,12 +74,17 @@ class Invariant(BaseException):
         self.dst_value = None
         self._existing = None
         self._existing_str = None
-        n = self.__class__.__name__.replace('Error', '').lower()
-        n = re.sub('arg$', '', n)
+
+        truncated_name = self.__class__.__name__
+        truncated_name = re.sub('Error$', '', truncated_name)
+        truncated_name = re.sub('Arg$', '', truncated_name)
         if hasattr(self, '_regex'):
             self._pattern = re.compile(self._regex)
             if not hasattr(self, 'expected'):
-                self.expected = "%s to match regex '%s'" % (n, self._regex)
+                self.expected = "%s to match regex '%s'" % (
+                        truncated_name.lower(),
+                        self._regex,
+                )
             # implies can't set test if you set _regex?
             self._test = self._test_regex
 
@@ -138,11 +143,7 @@ class Invariant(BaseException):
         self._opt_long = l
         self._opt_short = s
 
-        tokens = re.findall('[A-Z][^A-Z]*', self.__class__.__name__)
-        if tokens[-1] == 'Error':
-            tokens = tokens[:-1]
-        elif tokens[-1] == 'Arg':
-            tokens = tokens[:-1]
+        tokens = re.findall('[A-Z][^A-Z]*', truncated_name)
         self._capitalized_name = ' '.join(tokens)
 
     def _test_regex(self):
