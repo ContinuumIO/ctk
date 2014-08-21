@@ -111,7 +111,7 @@ class Invariant(BaseException):
                 s = re.sub('^-', '', s)
                 l = re.sub('^--', '', l)
                 assert s, s
-                assert l, l
+                assert all([l, len(l) >= 2]), l
 
             else:
                 if a[0] == '-' and a[1] != '-':
