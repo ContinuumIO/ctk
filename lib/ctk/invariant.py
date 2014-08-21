@@ -106,53 +106,9 @@ class Invariant(BaseException):
         if not self._metavar:
             self._metavar = name.upper()
 
-        def opt_strs_from_arg(a):
-            assert len(a) >= 2, a
-            (s, l) = (None, None)
-            if '/' in a:
-                # both short and long have been specified
-                (s, l) = a.split('/')
-                s = re.sub('^-', '', s)
-                l = re.sub('^--', '', l)
-            elif a[0] == '-' and a[1] != '-':
-                # ONLY short has been specified
-                s = a[1:]
-            else:
-                assert a.startswith('--'), a
-                # ONLY long has been specified
-                l = a[2:]
-            return s, l
-
-        def opt_strs_from_name(name, short_opts):
-            (s, l) = (None, None)
-            l = name.replace('_', '-')
-
-            chars = [ (c, c.upper()) for c in list(name) ]
-            for c in itertools.chain.from_iterable(chars):
-                if c not in short_opts:
-                    s = c
-                    break
-            return s, l
-
-        def assert_s_l_correctness(s, l):
-            assert s or l, (s, l)
-            assert s is None or len(s) == 1, s
-            assert l is None or len(l) >= 2, l
-
-        def insert_opt(opt, opts, self):
-            if opt:
-                assert opt not in opts, (opt, opts)
-                opts[opt] = self
-
         long_opts = obj._long_opts
         short_opts = obj._short_opts
-        s, l = None, None
-        if self._arg:
-            s, l = opt_strs_from_arg(self._arg)
-        else:
-            s, l = opt_strs_from_name(name, short_opts)
-
-        assert_s_l_correctness(s, l)
+        s, l = parse_opt_strs(self._arg, name, short_opts)
         insert_opt(l, long_opts, self)
         insert_opt(s, short_opts, self)
 
@@ -730,6 +686,57 @@ class InvariantAwareObject(object):
             # the track (i.e. for logging purposes).
             old_value = invariant._existing_str
             self._invariants_processed.append(invariant)
+
+
+def parse_opt_strs(arg, name, short_opts):
+
+    def opt_strs_from_arg(arg):
+        assert len(arg) >= 2, arg
+        (s, l) = (None, None)
+        if '/' in arg:
+            # both short and long have been specified
+            (s, l) = arg.split('/')
+            s = re.sub('^-', '', s)
+            l = re.sub('^--', '', l)
+        elif arg[0] == '-' and arg[1] != '-':
+            # ONLY short has been specified
+            s = arg[1:]
+        else:
+            assert arg.startswith('--'), arg
+            # ONLY long has been specified
+            l = arg[2:]
+        return s, l
+
+    def opt_strs_from_name(name, short_opts):
+        (s, l) = (None, None)
+        l = name.replace('_', '-')
+
+        chars = [ (c, c.upper()) for c in list(name) ]
+        for c in itertools.chain.from_iterable(chars):
+            if c not in short_opts:
+                s = c
+                break
+        return s, l
+
+    def assert_s_l_correctness(s, l):
+        assert s or l, (s, l)
+        assert s is None or len(s) == 1, s
+        assert l is None or len(l) >= 2, l
+
+    s, l = None, None
+    if arg:
+        s, l = opt_strs_from_arg(arg)
+    else:
+        s, l = opt_strs_from_name(name, short_opts)
+
+    assert_s_l_correctness(s, l)
+    return s, l
+
+
+def insert_opt(opt, opts, self):
+    if opt:
+        assert opt not in opts, (opt, opts)
+        opts[opt] = self
 
 
 # vim:set ts=8 sw=4 sts=4 tw=78 et:
