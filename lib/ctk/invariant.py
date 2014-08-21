@@ -75,8 +75,7 @@ class Invariant(BaseException):
         self._existing = None
         self._existing_str = None
         n = self.__class__.__name__.replace('Error', '').lower()
-        if n.endswith('arg'):
-            n = n[:-3]
+        n = re.sub('arg$', '', n)
         if hasattr(self, '_regex'):
             self._pattern = re.compile(self._regex)
             if not hasattr(self, 'expected'):
@@ -109,10 +108,8 @@ class Invariant(BaseException):
             assert len(a) >= 2, a
             if '/' in a:
                 (s, l) = a.split('/')
-                if s.startswith('-'):
-                    s = s[1:]
-                if l.startswith('--'):
-                    l = l[2:]
+                s = re.sub('^-', '', s)
+                l = re.sub('^--', '', l)
                 assert s, s
                 assert l, l
 
