@@ -78,6 +78,9 @@ class Invariant(BaseException):
         truncated_name = self.__class__.__name__
         truncated_name = re.sub('Error$', '', truncated_name)
         truncated_name = re.sub('Arg$', '', truncated_name)
+        tokens = re.findall('[A-Z][^A-Z]*', truncated_name)
+        self._capitalized_name = ' '.join(tokens)
+
         if hasattr(self, '_regex'):
             self._pattern = re.compile(self._regex)
             if not hasattr(self, 'expected'):
@@ -142,9 +145,6 @@ class Invariant(BaseException):
 
         self._opt_long = l
         self._opt_short = s
-
-        tokens = re.findall('[A-Z][^A-Z]*', truncated_name)
-        self._capitalized_name = ' '.join(tokens)
 
     def _test_regex(self):
         return bool(self._pattern.match(self.actual))
