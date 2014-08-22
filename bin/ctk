@@ -1,2 +1,2 @@
-echo "ctk"
+python -m ctk.cli ctk ctk $*
 
