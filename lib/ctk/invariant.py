@@ -619,7 +619,7 @@ class InvariantAwareObject(object):
         filtered_attr_names = filter(f, dir(self))
         filtered_attr_patterns = map(p.findall, filtered_attr_names)
         converted_attr_patterns = map(c, filtered_attr_patterns)
-        filtered_attrs = map(self.__getattr__, filtered_attr_names)
+        filtered_attrs = [getattr(self, _) for _ in filtered_attr_names]
         classes = dict(zip(converted_attr_patterns, filtered_attrs))
         names = dict((v.__name__, k) for (k, v) in classes.items())
 
