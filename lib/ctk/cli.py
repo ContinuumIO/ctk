@@ -482,9 +482,8 @@ class CLI(object):
 # Main
 #===============================================================================
 def extract_command_args_and_kwds(*args):
-    split_on_comma = methodcaller('split', ',')
     program_name, _rest = args[0], args[1:]
-    module_names = map(split_on_comma, _rest) if _rest else None
+    module_names = _rest[0].split(',') if _rest else None
     kwds = {
         'program_name': program_name,
         'module_names': module_names,
