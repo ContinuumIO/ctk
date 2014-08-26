@@ -482,7 +482,7 @@ class CLI(object):
 # Main
 #===============================================================================
 def extract_command_args_and_kwds(*args):
-    program_name, _module_names, args = args[0], args[1:2], args[2:]
+    program_name, _module_names, args = args[0], args[1:2], list(args[2:])
     module_names = _module_names[0].split(',') if _module_names else None
     kwds = {
         'program_name': program_name,
